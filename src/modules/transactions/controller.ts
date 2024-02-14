@@ -19,8 +19,8 @@ export default class Controller {
 	 * For e.g. if the input is year 2002, the query should return 12 entries (1 for each month)
 	 */
 	public highestTransactionHour = async (req: ApiRequest): Promise<ApiResponse> => {
-		const uid = req.param.uid;
-		const res = await this.trxnTable.userTransactionStats(uid);
+		const year = req.query.year;
+		const res = await this.trxnTable.highestTransactionHour(year);
 		return res.apiResponse();
 	};
 

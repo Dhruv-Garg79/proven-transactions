@@ -49,6 +49,45 @@ export default class TransactionsTable extends BaseTable<TUser> {
 		}
 	}
 
+	public async highestTransactionHour(year: number): Promise<
+		Result<
+			Array<{
+				userid: string;
+				totalAmount: number;
+			}>
+		>
+	> {
+		try {
+			const query = `
+			with x as (
+				select DATE_PART('month', timestamp::date) as mon, timestamp::date as date, 
+				DATE_PART('hour', timestamp) as hour, count(timestamp) as "totalTransactions"
+				from transactions t
+				where DATE_PART('year', timestamp::date) = '${year}'
+				group by timestamp::date, DATE_PART('hour', timestamp)
+			)
+			select distinct on (mon) date, hour, "totalTransactions"
+			from x
+			order by mon, "totalTransactions" desc				
+			`;
+			const res = await this.postgres.pgClient.query(query);
+
+			res.rows.forEach(it => {
+				it.date = new Date(it.date).toLocaleDateString();
+				it.startTime = it.hour > 12 ? it.hour - 12 + ':00PM' : it.hour + ':00AM';
+				if(it.hour < 10) it.startTime = '0' + it.startTime;
+
+				it.totalTransactions = Number(it.totalTransactions);
+				delete it.hour;
+			});
+
+			return new Result(res.rows);
+		} catch (error) {
+			this.logger.error(error);
+			return Result.error(error.message);
+		}
+	}
+
 	public async userTransactionStats(uid: string): Promise<
 		Result<{
 			totalAmount: number;
