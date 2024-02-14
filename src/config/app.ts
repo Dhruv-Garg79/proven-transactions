@@ -7,10 +7,10 @@ const server: FastifyInstance = fastify({});
 console.log('\nAvailable routes:');
 Object.keys(serviceRoutes).forEach(serviceName => {
 	serviceRoutes[serviceName].forEach(route => {
-		console.log(route.method.padEnd(7) + `http://localhost:${envConfig.serverPort}/api/${serviceName}${route.path}`);
+		console.log(route.method.padEnd(7) + `http://localhost:${envConfig.serverPort}/${serviceName}${route.path}`);
 		server.route({
 			method: route.method,
-			url: `/api/${serviceName}${route.path}`,
+			url: `/${serviceName}${route.path}`,
 			handler: route.handler,
 		});
 	});

@@ -38,6 +38,7 @@ export const apiHandler = (method: HttpMethod, path: string, handler: TControlle
 					// run all before middleware
 					// since middleware are supposed to be run synchronously in order, we will need to do this
 					for (const middleware of before) {
+						// eslint-disable-next-line no-await-in-loop
 						const mRes = await middleware(apiReq);
 
 						// return error whenever any middleware fails
@@ -49,7 +50,8 @@ export const apiHandler = (method: HttpMethod, path: string, handler: TControlle
 
 					// actual request is processed here
 					const res = await handler(apiReq);
-
+					await apiReq.executePostExecutor(res);
+					
 					return clientReply(reply, apiReq, res, startTime);
 				} catch (error) {
 					logger.error(error, error.stack);
