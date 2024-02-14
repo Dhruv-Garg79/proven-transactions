@@ -41,9 +41,33 @@ export default class TransactionsTable extends BaseTable<TUser> {
 			order by sum(amount) desc
 			limit ${n}		
 			`;
-			console.log(query);
 			const res = await this.postgres.pgClient.query(query);
 			return new Result(res.rows);
+		} catch (error) {
+			this.logger.error(error);
+			return Result.error(error.message);
+		}
+	}
+
+	public async userTransactionStats(uid: string): Promise<
+		Result<{
+			totalAmount: number;
+			averageAmount: number;
+			trxnCount: number;
+		}>
+	> {
+		try {
+			const query = `
+			select userid, sum(amount) as "totalAmount", avg(amount) as "averageAmount", count(userid) as "trxnCount" from transactions 
+			where userid = '${uid}'
+			group by userid
+			`;
+			const res = await this.postgres.pgClient.query(query);
+			return new Result({
+				totalAmount: Number(res.rows[0].totalAmount),
+				averageAmount: Number(res.rows[0].averageAmount),
+				trxnCount: Number(res.rows[0].trxnCount),
+			});
 		} catch (error) {
 			this.logger.error(error);
 			return Result.error(error.message);
