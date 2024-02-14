@@ -16,6 +16,7 @@ const transactionRoutes: Array<TApiHandler> = [
 		'/highest-trans-hour',
 		controller.highestTransactionHour,
 		validate(validation.highestTransactionHour),
+		cacheMiddleware(TTL.hour_1), // since we are returning hourly data, we can cache it for 1 hour easily
 	),
 
 	apiHandler(
