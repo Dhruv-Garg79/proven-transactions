@@ -49,6 +49,15 @@ export default class TransactionsTable extends BaseTable<TUser> {
 		}
 	}
 
+	/**
+CREATE MATERIALIZED VIEW hourly_transactions as (
+	select DATE_PART('year', timestamp) as year, DATE_PART('month', timestamp::date) as mon, timestamp::date as date, 
+	DATE_PART('hour', timestamp) as hour, count(timestamp) as "totalTransactions"
+	from transactions t
+	group by DATE_PART('year', timestamp), timestamp::date, DATE_PART('hour', timestamp)
+)
+this query uses a materialized view for greater performance
+	 */
 	public async highestTransactionHour(year: number): Promise<
 		Result<
 			Array<{
@@ -59,15 +68,9 @@ export default class TransactionsTable extends BaseTable<TUser> {
 	> {
 		try {
 			const query = `
-			with x as (
-				select DATE_PART('month', timestamp::date) as mon, timestamp::date as date, 
-				DATE_PART('hour', timestamp) as hour, count(timestamp) as "totalTransactions"
-				from transactions t
-				where DATE_PART('year', timestamp::date) = '${year}'
-				group by timestamp::date, DATE_PART('hour', timestamp)
-			)
 			select distinct on (mon) date, hour, "totalTransactions"
-			from x
+			from hourly_transactions
+			where year = ${year}
 			order by mon, "totalTransactions" desc				
 			`;
 			const res = await this.postgres.pgClient.query(query);
@@ -75,7 +78,7 @@ export default class TransactionsTable extends BaseTable<TUser> {
 			res.rows.forEach(it => {
 				it.date = new Date(it.date).toLocaleDateString();
 				it.startTime = it.hour > 12 ? it.hour - 12 + ':00PM' : it.hour + ':00AM';
-				if(it.hour < 10) it.startTime = '0' + it.startTime;
+				if (it.hour < 10) it.startTime = '0' + it.startTime;
 
 				it.totalTransactions = Number(it.totalTransactions);
 				delete it.hour;
