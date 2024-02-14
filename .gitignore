@@ -1,0 +1,5 @@
+*.sql
+.env.prod
+.vscode
+node_modules
+output

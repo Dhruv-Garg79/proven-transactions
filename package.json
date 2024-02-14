@@ -1,0 +1,36 @@
+{
+  "name": "sample-project",
+  "version": "1.0.0",
+  "description": "sample project",
+  "main": "output/index.js",
+  "keywords": [],
+  "author": "Dhruv Garg",
+  "license": "ISC",
+  "scripts": {
+    "compile": "tsc --build",
+    "compile:watch": "tsc --build --watch",
+    "dev": "NODE_ENV=local nodemon --experimental-modules --es-module-specifier-resolution=node",
+    "build:dev": "concurrently --kill-others \"bun compile\" && NODE_ENV=local nodemon --experimental-modules --es-module-specifier-resolution=node --max-semi-space-size=64"
+  },
+  "engines": {
+    "node": "18"
+  },
+  "dependencies": {
+    "@types/pg": "^8.11.0",
+    "fastify": "^4.26.1",
+    "pg": "^8.11.3",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.17",
+    "dotenv": "^16.3.1",
+    "nodemon": "^3.0.1",
+    "prettier": "^3.0.3",
+    "typescript": "^5.2.2",
+    "@typescript-eslint/eslint-plugin": "^6.18.1",
+    "@typescript-eslint/parser": "^6.18.1",
+    "concurrently": "^8.2.2",
+    "eslint": "^8.56.0",
+    "eslint-plugin-promise": "^6.1.1"
+  }
+}
