@@ -1,5 +1,5 @@
 import { TApiHandler } from '../lib/types';
-import transactionRoutes from '../modules/users/routes';
+import transactionRoutes from '../modules/transactions/routes';
 
 const serviceRoutes: { [key: string]: Array<TApiHandler> } = {
 	transactions: transactionRoutes,

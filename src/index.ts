@@ -1,6 +1,7 @@
 import server from './config/app';
 import { envConfig } from './config/envConfig';
 import Postgres from './config/postgres';
+import CacheService from './services/cacheService';
 
 const exitHandler = error => {
 	console.error(error);
@@ -23,7 +24,7 @@ process.on('SIGTERM', () => {
 
 const start = async () => {
 	try {
-		await Postgres.getInstance().connect();
+		await Promise.all([Postgres.getInstance().connect(), CacheService.getInstance().initialize()]);
 		await server.listen({ port: envConfig.serverPort });
 		console.info(`Listening to port ${envConfig.serverPort}\n`);
 	} catch (err) {

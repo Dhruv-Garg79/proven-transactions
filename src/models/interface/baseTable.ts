@@ -108,7 +108,6 @@ export default class BaseTable<T> {
 	}
 
 	public async getRowById(id: string): Promise<Result<T>> {
-		this.logger.debug('getRowById Params: ', id);
 		try {
 			const statement = `SELECT * FROM ${this.tableName} WHERE "${this.primaryKey}" = $1`;
 			const result = await this.postgres.pgClient.query(statement, [id]);

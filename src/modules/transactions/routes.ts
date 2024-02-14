@@ -7,7 +7,7 @@ import validation from './validation';
 const controller = new Controller();
 
 const transactionRoutes: Array<TApiHandler> = [
-	apiHandler('GET', '/:id', controller.getTransaction, validate(validation.getTransaction)),
+	apiHandler('GET', '/top-users', controller.topUsers, validate(validation.topUsers)),
 ];
 
 export default transactionRoutes;
